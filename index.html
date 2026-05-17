@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClimaUY | Tiempo en Uruguay</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --surface: #ffffff;
+      --surface-2: #eef3f8;
+      --surface-3: #f8fafc;
+      --text: #111827;
+      --muted: #64748b;
+      --accent: #f59e0b;
+      --accent-2: #f97316;
+      --accent-dark: #d97706;
+      --border: rgba(15, 23, 42, 0.08);
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+      --good: #16a34a;
+      --warn: #f59e0b;
+      --bad: #dc2626;
+    }
+
+    body.dark {
+      --bg: #0b1220;
+      --surface: #111c31;
+      --surface-2: #1e293b;
+      --surface-3: #0f172a;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(245, 158, 11, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .app {
+      width: min(1240px, 94%);
+      margin: 0 auto;
+      padding: 22px 0 42px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 10px 0;
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 12px 24px rgba(249, 115, 22, 0.28);
+    }
+
+    .brand h1 {
+      font-size: clamp(1.4rem, 4vw, 2.05rem);
+      line-height: 1;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-btn, .ghost-btn {
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 86%, transparent);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 11px 15px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      font-weight: 800;
+    }
+
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: color-mix(in srgb, var(--surface) 90%, transparent);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-card {
+      padding: 26px;
+      min-height: 430px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.18);
+      right: -80px;
+      top: -80px;
+    }
+
+    .eyebrow {
+      color: var(--accent-dark);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+    }
+
+    .hero-card h2 {
+      font-size: clamp(2.2rem, 7vw, 4.7rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      max-width: 760px;
+      margin-bottom: 18px;
+    }
+
+    .hero-card .desc {
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.7;
+      font-size: 1rem;
+      margin-bottom: 22px;
+    }
+
+    .search-panel {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 12px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input, select, button {
+      font: inherit;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 16px;
+      outline: none;
+      font-weight: 700;
+    }
+
+    .suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: none;
+      z-index: 50;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .suggestions button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .suggestions button:hover {
+      background: var(--surface-2);
+    }
+
+    .primary-btn {
+      border: 0;
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      color: white;
+      border-radius: 16px;
+      padding: 0 22px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(249, 115, 22, 0.28);
+    }
+
+    .quick-cities, .favorites {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+
+    .weather-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .location {
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .temperature {
+      display: flex;
+      align-items: start;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .temperature strong {
+      font-size: clamp(4rem, 10vw, 6.4rem);
+      line-height: 0.86;
+      letter-spacing: -0.08em;
+    }
+
+    .temperature span {
+      font-size: 2rem;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .condition {
+      font-size: 1.2rem;
+      font-weight: 950;
+      margin-bottom: 8px;
+    }
+
+    .updated {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .big-icon {
+      font-size: 4.5rem;
+      filter: drop-shadow(0 16px 18px rgba(245, 158, 11, 0.22));
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 15px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .stat strong {
+      font-size: 1.1rem;
+    }
+
+    .mini-map {
+      margin-top: 14px;
+      border-radius: 20px;
+      padding: 16px;
+      background:
+        linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(59, 130, 246, 0.10)),
+        var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .section-title {
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-title h3 {
+      font-size: 1.35rem;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .detail-card {
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
+      min-height: 132px;
+    }
+
+    .detail-card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .detail-card .value {
+      font-size: 1.55rem;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+    }
+
+    .detail-card .hint {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 10px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .forecast {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 14px;
+    }
+
+    .day {
+      padding: 18px;
+      min-height: 166px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
+    }
+
+    .day-name {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 0.85rem;
+    }
+
+    .icon {
+      font-size: 2rem;
+      margin: 10px 0;
+    }
+
+    .range {
+      font-weight: 950;
+    }
+
+    .rain {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+      font-weight: 750;
+    }
+
+    .hourly {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(112px, 1fr));
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .hour-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+      min-width: 112px;
+    }
+
+    .hour-card .time {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 0.82rem;
+    }
+
+    .hour-card .temp {
+      font-size: 1.35rem;
+      font-weight: 950;
+      margin-top: 8px;
+    }
+
+    .hour-card .small {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 8px;
+      font-weight: 700;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .compare-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+    }
+
+    .compare-card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .compare-card strong {
+      font-size: 1.65rem;
+      letter-spacing: -0.04em;
+    }
+
+    .compare-card p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+
+    .loading, .error {
+      padding: 18px;
+      border-radius: 18px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-weight: 800;
+      grid-column: 1 / -1;
+    }
+
+    .error {
+      color: var(--bad);
+    }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1020px) {
+      .grid-main {
+        grid-template-columns: 1fr;
+      }
+
+      .details-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .forecast {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .compare-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 620px) {
+      header {
+        align-items: flex-start;
+        position: static;
+      }
+
+      .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+
+      .primary-btn {
+        padding: 15px;
+      }
+
+      .stats, .details-grid, .forecast, .compare-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-line {
+        flex-direction: column-reverse;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">☀️</div>
+        <div>
+          <h1>ClimaUY</h1>
+          <p>Pronóstico real para Uruguay</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-btn" id="favBtn">☆ Guardar</button>
+        <button class="theme-btn" id="themeBtn">🌙 Modo oscuro</button>
+      </div>
+    </header>
+
+    <section class="grid-main">
+      <article class="card hero-card">
+        <div>
+          <p class="eyebrow">Tiempo local</p>
+          <h2>El clima de Uruguay, rápido y completo.</h2>
+          <p class="desc">
+            Buscá una ciudad uruguaya y mirá temperatura actual, sensación térmica, viento, lluvia,
+            humedad, presión, visibilidad, UV, amanecer, atardecer y pronóstico por hora.
+          </p>
+        </div>
+
+        <div class="search-panel">
+          <div class="search-row">
+            <div class="input-wrap">
+              <input id="cityInput" type="text" placeholder="Buscar ciudad o departamento..." autocomplete="off" />
+              <div class="suggestions" id="suggestions"></div>
+            </div>
+            <button class="primary-btn" id="searchBtn">Ver clima</button>
+          </div>
+
+          <div class="quick-cities" id="quickCities"></div>
+          <div class="favorites" id="favorites"></div>
+        </div>
+      </article>
+
+      <article class="card weather-card" id="currentCard">
+        <div class="loading">Cargando clima de Montevideo...</div>
+      </article>
+    </section>
+
+    <div class="section-title">
+      <h3>Detalles actuales</h3>
+      <p id="detailSubtitle">Datos meteorológicos completos</p>
+    </div>
+    <section class="details-grid" id="detailsGrid">
+      <div class="loading">Cargando detalles...</div>
+    </section>
+
+    <div class="section-title">
+      <h3>Próximas horas</h3>
+      <p>Temperatura, lluvia y viento</p>
+    </div>
+    <section class="hourly" id="hourlyGrid">
+      <div class="loading">Cargando por hora...</div>
+    </section>
+
+    <div class="section-title">
+      <h3>Pronóstico semanal</h3>
+      <p>7 días</p>
+    </div>
+    <section class="forecast" id="forecastGrid">
+      <div class="loading">Cargando pronóstico...</div>
+    </section>
+
+    <div class="section-title">
+      <h3>Ciudades destacadas</h3>
+      <p>Comparación rápida</p>
+    </div>
+    <section class="compare-grid" id="compareGrid">
+      <div class="loading">Cargando ciudades...</div>
+    </section>
+
+    <div class="section-title">
+      <h3>Mapa meteorológico</h3>
+      <p>Ciudades y clima en Uruguay</p>
+    </div>
+    <section class="chart-card">
+      <div id="map" style="height: 500px; border-radius: 20px;"></div>
+    </section>
+
+    <footer>
+      Derechos de autor © 2026 ClimaUY.
+    </footer>
+  </main>
+
+  <script>
+    const cities = [
+      { name: "Montevideo", dept: "Montevideo", lat: -34.9011, lon: -56.1645 },
+      { name: "Paysandú", dept: "Paysandú", lat: -32.3214, lon: -58.0756 },
+      { name: "Salto", dept: "Salto", lat: -31.3833, lon: -57.9667 },
+      { name: "Maldonado", dept: "Maldonado", lat: -34.9000, lon: -54.9500 },
+      { name: "Punta del Este", dept: "Maldonado", lat: -34.9667, lon: -54.9500 },
+      { name: "Rivera", dept: "Rivera", lat: -30.9053, lon: -55.5508 },
+      { name: "Tacuarembó", dept: "Tacuarembó", lat: -31.7333, lon: -55.9833 },
+      { name: "Artigas", dept: "Artigas", lat: -30.4000, lon: -56.4667 },
+      { name: "Canelones", dept: "Canelones", lat: -34.5228, lon: -56.2778 },
+      { name: "Las Piedras", dept: "Canelones", lat: -34.7264, lon: -56.2200 },
+      { name: "Pando", dept: "Canelones", lat: -34.7172, lon: -55.9586 },
+      { name: "Colonia del Sacramento", dept: "Colonia", lat: -34.4626, lon: -57.8398 },
+      { name: "Carmelo", dept: "Colonia", lat: -34.0002, lon: -58.2840 },
+      { name: "Mercedes", dept: "Soriano", lat: -33.2524, lon: -58.0305 },
+      { name: "Fray Bentos", dept: "Río Negro", lat: -33.1325, lon: -58.2956 },
+      { name: "Young", dept: "Río Negro", lat: -32.6984, lon: -57.6269 },
+      { name: "Durazno", dept: "Durazno", lat: -33.3806, lon: -56.5236 },
+      { name: "Florida", dept: "Florida", lat: -34.0956, lon: -56.2142 },
+      { name: "Minas", dept: "Lavalleja", lat: -34.3759, lon: -55.2377 },
+      { name: "Rocha", dept: "Rocha", lat: -34.4833, lon: -54.3333 },
+      { name: "La Paloma", dept: "Rocha", lat: -34.6627, lon: -54.1645 },
+      { name: "Chuy", dept: "Rocha", lat: -33.6971, lon: -53.4593 },
+      { name: "Treinta y Tres", dept: "Treinta y Tres", lat: -33.2333, lon: -54.3833 },
+      { name: "Melo", dept: "Cerro Largo", lat: -32.3667, lon: -54.1833 },
+      { name: "San José de Mayo", dept: "San José", lat: -34.3375, lon: -56.7136 },
+      { name: "Trinidad", dept: "Flores", lat: -33.5165, lon: -56.8996 },
+      { name: "Bella Unión", dept: "Artigas", lat: -30.2597, lon: -57.5992 },
+      { name: "Aiguá", dept: "Maldonado", lat: -34.2049, lon: -54.7565 },
+      { name: "Atlántida", dept: "Canelones", lat: -34.7719, lon: -55.7584 },
+      { name: "Ciudad de la Costa", dept: "Canelones", lat: -34.8167, lon: -55.9500 }
+    ];
+
+    const quickCityNames = ["Montevideo", "Paysandú", "Salto", "Punta del Este", "Rivera", "Melo"];
+    const compareCityNames = ["Montevideo", "Paysandú", "Salto", "Maldonado", "Rivera"];
+
+    const cityInput = document.getElementById("cityInput");
+    const suggestions = document.getElementById("suggestions");
+    const quickCities = document.getElementById("quickCities");
+    const favoritesBox = document.getElementById("favorites");
+    const searchBtn = document.getElementById("searchBtn");
+    const favBtn = document.getElementById("favBtn");
+    const currentCard = document.getElementById("currentCard");
+    const detailsGrid = document.getElementById("detailsGrid");
+    const hourlyGrid = document.getElementById("hourlyGrid");
+    const forecastGrid = document.getElementById("forecastGrid");
+    const compareGrid = document.getElementById("compareGrid");
+    const themeBtn = document.getElementById("themeBtn");
+    const detailSubtitle = document.getElementById("detailSubtitle");
+
+    let selectedCity = cities[0];
+
+    const weatherCodes = {
+      0: ["Despejado", "☀️"],
+      1: ["Mayormente despejado", "🌤️"],
+      2: ["Parcialmente nublado", "⛅"],
+      3: ["Nublado", "☁️"],
+      45: ["Niebla", "🌫️"],
+      48: ["Niebla con escarcha", "🌫️"],
+      51: ["Llovizna leve", "🌦️"],
+      53: ["Llovizna", "🌦️"],
+      55: ["Llovizna intensa", "🌧️"],
+      61: ["Lluvia leve", "🌧️"],
+      63: ["Lluvia", "🌧️"],
+      65: ["Lluvia fuerte", "⛈️"],
+      71: ["Nieve leve", "🌨️"],
+      73: ["Nieve", "🌨️"],
+      75: ["Nieve fuerte", "❄️"],
+      80: ["Chaparrones leves", "🌦️"],
+      81: ["Chaparrones", "🌧️"],
+      82: ["Chaparrones fuertes", "⛈️"],
+      95: ["Tormenta", "⛈️"],
+      96: ["Tormenta con granizo", "⛈️"],
+      99: ["Tormenta fuerte con granizo", "⛈️"]
+    };
+
+    function getWeatherInfo(code) {
+      return weatherCodes[code] || ["Condición variable", "🌡️"];
+    }
+
+    function normalizeText(text) {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function formatDay(dateText) {
+      return new Intl.DateTimeFormat("es-UY", {
+        weekday: "short",
+        day: "numeric",
+        month: "short"
+      }).format(new Date(dateText + "T12:00:00"));
+    }
+
+    function formatHour(dateText) {
+      return new Intl.DateTimeFormat("es-UY", {
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(dateText));
+    }
+
+    function getUVLabel(uv) {
+      if (uv < 3) return "Bajo";
+      if (uv < 6) return "Moderado";
+      if (uv < 8) return "Alto";
+      if (uv < 11) return "Muy alto";
+      return "Extremo";
+    }
+
+    function getWindDirection(degrees) {
+      const dirs = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+      return dirs[Math.round(degrees / 45) % 8];
+    }
+
+    function buildAPI(city) {
+      const params = new URLSearchParams({
+        latitude: city.lat,
+        longitude: city.lon,
+        timezone: "America/Montevideo",
+        current: "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,precipitation,pressure_msl,surface_pressure,is_day",
+        hourly: "temperature_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,relative_humidity_2m,visibility",
+        daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max,wind_speed_10m_max",
+        forecast_days: 7
+      });
+
+      return `https://api.open-meteo.com/v1/forecast?${params}`;
+    }
+
+    async function fetchWeather(city) {
+      const response = await fetch(buildAPI(city));
+      if (!response.ok) throw new Error("No se pudo conectar con la API.");
+      return response.json();
+    }
+
+    async function loadWeather(city) {
+      selectedCity = city;
+      cityInput.value = `${city.name}, ${city.dept}`;
+      suggestions.style.display = "none";
+      updateFavButton();
+
+      currentCard.innerHTML = `<div class="loading">Cargando clima de ${city.name}...</div>`;
+      detailsGrid.innerHTML = `<div class="loading">Cargando detalles...</div>`;
+      hourlyGrid.innerHTML = `<div class="loading">Cargando por hora...</div>`;
+      forecastGrid.innerHTML = `<div class="loading">Cargando pronóstico...</div>`;
+      detailSubtitle.textContent = `${city.name}, ${city.dept}`;
+
+      try {
+        const data = await fetchWeather(city);
+        renderCurrent(city, data.current);
+        renderDetails(data.current, data.daily, data.hourly);
+        renderHourly(data.hourly);
+        renderForecast(data.daily);
+      } catch (error) {
+        currentCard.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        detailsGrid.innerHTML = `<div class="error">No se pudieron cargar los detalles.</div>`;
+        hourlyGrid.innerHTML = `<div class="error">Probá de nuevo en unos segundos.</div>`;
+        forecastGrid.innerHTML = `<div class="error">Probá de nuevo en unos segundos.</div>`;
+      }
+    }
+
+    function renderCurrent(city, current) {
+      const [condition, icon] = getWeatherInfo(current.weather_code);
+      const dayNight = current.is_day ? "Día" : "Noche";
+
+      currentCard.innerHTML = `
+        <div>
+          <div class="top-line">
+            <div>
+              <p class="location">${city.name}, ${city.dept}</p>
+              <p class="updated">${dayNight} · actualizado ${formatHour(current.time)}</p>
+            </div>
+            <div class="big-icon">${icon}</div>
+          </div>
+
+          <div class="temperature">
+            <strong>${Math.round(current.temperature_2m)}</strong>
+            <span>°C</span>
+          </div>
+          <p class="condition">${condition}</p>
+          <p class="updated">Sensación térmica ${Math.round(current.apparent_temperature)}°C</p>
+        </div>
+
+        <div>
+          <div class="stats">
+            <div class="stat">
+              <span>Humedad</span>
+              <strong>${current.relative_humidity_2m}%</strong>
+            </div>
+            <div class="stat">
+              <span>Viento</span>
+              <strong>${Math.round(current.wind_speed_10m)} km/h</strong>
+            </div>
+            <div class="stat">
+              <span>Dirección</span>
+              <strong>${getWindDirection(current.wind_direction_10m)}</strong>
+            </div>
+            <div class="stat">
+              <span>Lluvia ahora</span>
+              <strong>${current.precipitation} mm</strong>
+            </div>
+          </div>
+          <div class="mini-map">
+            📍 Coordenadas: ${city.lat.toFixed(3)}, ${city.lon.toFixed(3)} · Uruguay<br>
+            Ideal para una web local: rápida, clara y enfocada solo en ciudades uruguayas.
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetails(current, daily, hourly) {
+      const sunrise = formatHour(daily.sunrise[0]);
+      const sunset = formatHour(daily.sunset[0]);
+      const uv = Math.round(daily.uv_index_max[0]);
+      const visibilityKm = Math.round(hourly.visibility[0] / 1000);
+      const maxWind = Math.round(daily.wind_speed_10m_max[0]);
+
+      const cards = [
+        ["Índice UV", uv, getUVLabel(uv)],
+        ["Amanecer", sunrise, "Primera luz del día"],
+        ["Atardecer", sunset, "Fin de luz solar"],
+        ["Presión", `${Math.round(current.pressure_msl)} hPa`, "Presión al nivel del mar"],
+        ["Presión local", `${Math.round(current.surface_pressure)} hPa`, "Presión en superficie"],
+        ["Visibilidad", `${visibilityKm} km`, "Estimación actual"],
+        ["Viento máximo", `${maxWind} km/h`, "Pico esperado hoy"],
+        ["Prob. lluvia", `${daily.precipitation_probability_max[0]}%`, "Máxima del día"]
+      ];
+
+      detailsGrid.innerHTML = cards.map(([label, value, hint]) => `
+        <article class="detail-card">
+          <p class="label">${label}</p>
+          <p class="value">${value}</p>
+          <p class="hint">${hint}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderHourly(hourly) {
+      const now = new Date();
+      let startIndex = hourly.time.findIndex(time => new Date(time) >= now);
+      if (startIndex < 0) startIndex = 0;
+
+      const hours = hourly.time.slice(startIndex, startIndex + 12).map((time, index) => {
+        const realIndex = startIndex + index;
+        const [condition, icon] = getWeatherInfo(hourly.weather_code[realIndex]);
+        return `
+          <article class="hour-card" title="${condition}">
+            <p class="time">${formatHour(time)}</p>
+            <div class="icon">${icon}</div>
+            <p class="temp">${Math.round(hourly.temperature_2m[realIndex])}°</p>
+            <p class="small">Lluvia ${hourly.precipitation_probability[realIndex]}%</p>
+            <p class="small">Viento ${Math.round(hourly.wind_speed_10m[realIndex])} km/h</p>
+          </article>
+        `;
+      });
+
+      hourlyGrid.innerHTML = hours.join("");
+    }
+
+    function renderForecast(daily) {
+      forecastGrid.innerHTML = daily.time.map((day, index) => {
+        const [condition, icon] = getWeatherInfo(daily.weather_code[index]);
+        const max = Math.round(daily.temperature_2m_max[index]);
+        const min = Math.round(daily.temperature_2m_min[index]);
+        const rain = daily.precipitation_probability_max[index];
+        const wind = Math.round(daily.wind_speed_10m_max[index]);
+
+        return `
+          <article class="day">
+            <div>
+              <p class="day-name">${formatDay(day)}</p>
+              <div class="icon">${icon}</div>
+              <p class="condition" style="font-size: 0.95rem">${condition}</p>
+            </div>
+            <div>
+              <p class="range">${max}° / ${min}°</p>
+              <p class="rain">Lluvia ${rain}%</p>
+              <p class="rain">Viento ${wind} km/h</p>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function loadComparison() {
+      compareGrid.innerHTML = `<div class="loading">Cargando ciudades...</div>`;
+      try {
+        const selected = compareCityNames.map(name => cities.find(c => c.name === name));
+        const results = await Promise.all(selected.map(async city => {
+          const data = await fetchWeather(city);
+          return { city, current: data.current, daily: data.daily };
+        }));
+
+        compareGrid.innerHTML = results.map(({ city, current, daily }) => {
+          const [condition, icon] = getWeatherInfo(current.weather_code);
+          return `
+            <article class="compare-card">
+              <h4>${city.name}</h4>
+              <strong>${Math.round(current.temperature_2m)}°</strong>
+              <p>${icon} ${condition}</p>
+              <p>Máx ${Math.round(daily.temperature_2m_max[0])}° · Mín ${Math.round(daily.temperature_2m_min[0])}°</p>
+            </article>
+          `;
+        }).join("");
+      } catch {
+        compareGrid.innerHTML = `<div class="error">No se pudo cargar la comparación.</div>`;
+      }
+    }
+
+    function renderQuickCities() {
+      quickCities.innerHTML = quickCityNames.map(name => {
+        const city = cities.find(c => c.name === name);
+        return `<button class="pill" data-city="${city.name}">${city.name}</button>`;
+      }).join("");
+    }
+
+    function renderSuggestions() {
+      const query = normalizeText(cityInput.value.trim());
+      if (!query) {
+        suggestions.style.display = "none";
+        return;
+      }
+
+      const matches = cities.filter(city =>
+        normalizeText(city.name).includes(query) || normalizeText(city.dept).includes(query)
+      ).slice(0, 8);
+
+      if (!matches.length) {
+        suggestions.innerHTML = `<button type="button">No encontré esa ciudad</button>`;
+      } else {
+        suggestions.innerHTML = matches.map(city => `
+          <button type="button" data-city="${city.name}">${city.name} · ${city.dept}</button>
+        `).join("");
+      }
+
+      suggestions.style.display = "block";
+    }
+
+    function findCityFromInput() {
+      const query = normalizeText(cityInput.value.trim());
+      return cities.find(city =>
+        normalizeText(city.name) === query ||
+        normalizeText(`${city.name}, ${city.dept}`) === query
+      ) || cities.find(city => normalizeText(city.name).includes(query));
+    }
+
+    function getFavorites() {
+      return JSON.parse(localStorage.getItem("climauy-favorites") || "[]");
+    }
+
+    function setFavorites(favs) {
+      localStorage.setItem("climauy-favorites", JSON.stringify(favs));
+      renderFavorites();
+      updateFavButton();
+    }
+
+    function renderFavorites() {
+      const favs = getFavorites();
+      if (!favs.length) {
+        favoritesBox.innerHTML = "";
+        return;
+      }
+
+      favoritesBox.innerHTML = favs.map(name => `<button class="pill" data-city="${name}">★ ${name}</button>`).join("");
+    }
+
+    function updateFavButton() {
+      const favs = getFavorites();
+      favBtn.textContent = favs.includes(selectedCity.name) ? "★ Guardado" : "☆ Guardar";
+    }
+
+    searchBtn.addEventListener("click", () => {
+      const city = findCityFromInput();
+      if (city) loadWeather(city);
+      else alert("Esa ciudad no está en la lista de Uruguay todavía.");
+    });
+
+    cityInput.addEventListener("input", renderSuggestions);
+    cityInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") searchBtn.click();
+    });
+
+    document.addEventListener("click", event => {
+      const btn = event.target.closest("button[data-city]");
+      if (btn) {
+        const city = cities.find(c => c.name === btn.dataset.city);
+        if (city) loadWeather(city);
+      }
+
+      if (!event.target.closest(".input-wrap")) {
+        suggestions.style.display = "none";
+      }
+    });
+
+    favBtn.addEventListener("click", () => {
+      const favs = getFavorites();
+      if (favs.includes(selectedCity.name)) {
+        setFavorites(favs.filter(name => name !== selectedCity.name));
+      } else {
+        setFavorites([...favs, selectedCity.name].slice(-6));
+      }
+    });
+
+    themeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      themeBtn.textContent = isDark ? "☀️ Modo claro" : "🌙 Modo oscuro";
+      localStorage.setItem("climauy-theme", isDark ? "dark" : "light");
+    });
+
+    function initTheme() {
+      const saved = localStorage.getItem("climauy-theme");
+      if (saved === "dark") {
+        document.body.classList.add("dark");
+        themeBtn.textContent = "☀️ Modo claro";
+      }
+    }
+
+    renderQuickCities();
+    renderFavorites();
+    initTheme();
+    loadWeather(cities[0]);
+    loadComparison();
+  </script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([-32.8, -56], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    cities.forEach(city => {
+      const marker = L.marker([city.lat, city.lon]).addTo(map);
+
+      marker.bindPopup(`
+        <strong>${city.name}</strong><br>
+        ${city.dept}, Uruguay<br>
+        <button onclick="selectMapCity('${city.name}')" style="margin-top:8px;padding:6px 10px;border:none;border-radius:8px;background:#f59e0b;color:white;cursor:pointer;font-weight:700;">
+          Ver clima
+        </button>
+      `);
+    });
+
+    window.selectMapCity = function(name) {
+      const city = cities.find(c => c.name === name);
+      if (city) {
+        loadWeather(city);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+</html>

@@ -372,3 +372,42 @@ body.dark .pwa-apk-download {
   gap: 12px;
   padding: 16px 0;
 }
+.pwa-dialog {
+  max-width: 480px;
+  max-height: calc(100dvh - 40px);
+  padding: 22px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+}
+
+.pwa-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+}
+
+.pwa-brand {
+  margin-bottom: 12px;
+}
+
+.pwa-features {
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.pwa-feature-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.pwa-download-options .pwa-confirm {
+  margin-top: 0;
+}
+
+.pwa-option-text small {
+  display: block;
+}
+
+.pwa-dismiss {
+  margin-top: 8px;
+}

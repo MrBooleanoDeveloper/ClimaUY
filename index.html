@@ -601,6 +601,26 @@
         flex-direction: column-reverse;
       }
     }
+    .install-btn {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 22px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25);
+  transition: transform 0.2s;
+}
+
+.install-btn:hover {
+  transform: translateY(-2px);
+}
+
+.install-btn[hidden] {
+  display: none !important;
+}
   </style>
 </head>
 <body>
@@ -616,6 +636,9 @@
       <div class="header-actions">
         <button class="ghost-btn" id="favBtn">☆ Guardar</button>
         <button class="theme-btn" id="themeBtn">🌙 Modo oscuro</button>
+        <button id="installBtn" class="install-btn" hidden>
+  📲 Instalar ClimaUY
+</button>
       </div>
     </header>
 
@@ -1151,6 +1174,37 @@
         .catch(console.error);
     });
   }
+</script>
+  <script>
+  let deferredPrompt = null;
+  const installBtn = document.getElementById("installBtn");
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    installBtn.hidden = false;
+  });
+
+  installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+
+    await deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      console.log("Instalación aceptada");
+    }
+
+    deferredPrompt = null;
+    installBtn.hidden = true;
+  });
+
+  window.addEventListener("appinstalled", () => {
+    installBtn.hidden = true;
+    deferredPrompt = null;
+    console.log("ClimaUY instalado correctamente");
+  });
 </script>
 </body>
 </html>

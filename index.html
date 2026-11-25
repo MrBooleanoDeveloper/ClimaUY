@@ -621,6 +621,20 @@
   display: none !important;
 }
   </style>
+  <!-- ClimaUY PWA 2.0 -->
+<link rel="manifest" href="/pwa/manifest.webmanifest">
+<link rel="stylesheet" href="/pwa/install.css">
+
+<meta name="theme-color" content="#f59e0b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ClimaUY">
+
+<link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/pwa/icon-192.png">
+
+<script src="/pwa/install.js" defer></script>
 </head>
 <body>
   <main class="app">
@@ -635,8 +649,8 @@
       <div class="header-actions">
         <button class="ghost-btn" id="favBtn">☆ Guardar</button>
         <button class="theme-btn" id="themeBtn">🌙 Modo oscuro</button>
-        <button id="installBtn" class="install-btn" hidden>
-  📲 Instalar ClimaUY
+        <button class="pwa-install-btn" id="pwaInstallBtn" hidden>
+  📲 Instalar app
 </button>
       </div>
     </header>
@@ -1174,5 +1188,117 @@
     });
   }
 </script>
+  <!-- Instalador ClimaUY -->
+<div id="pwaModal" class="pwa-overlay" hidden>
+
+  <div class="pwa-dialog"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="pwaTitle">
+
+    <button id="pwaClose"
+            class="pwa-close"
+            aria-label="Cerrar">
+      ×
+    </button>
+
+    <div class="pwa-brand">
+
+      <img src="/pwa/icon-192.png"
+           class="pwa-icon"
+           alt="ClimaUY">
+
+      <div class="pwa-eyebrow">
+        Aplicación oficial
+      </div>
+
+      <h2 id="pwaTitle">ClimaUY</h2>
+
+      <p id="pwaDescription">
+        El clima de Uruguay, siempre contigo.
+      </p>
+
+    </div>
+
+    <div class="pwa-features">
+
+      <div class="pwa-feature">
+        <span class="pwa-feature-icon">📱</span>
+        <div>
+          <strong>Acceso directo</strong>
+          <p>Desde tu pantalla de inicio.</p>
+        </div>
+      </div>
+
+      <div class="pwa-feature">
+        <span class="pwa-feature-icon">⚡</span>
+        <div>
+          <strong>Rápida y ligera</strong>
+          <p>Sin descargar grandes archivos.</p>
+        </div>
+      </div>
+
+      <div class="pwa-feature">
+        <span class="pwa-feature-icon">🌐</span>
+        <div>
+          <strong>Modo sin conexión</strong>
+          <p>Consultá los pronósticos guardados.</p>
+        </div>
+      </div>
+
+      <div class="pwa-feature">
+        <span class="pwa-feature-icon">🔄</span>
+        <div>
+          <strong>Siempre actualizada</strong>
+          <p>Recibí las últimas mejoras.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <button id="pwaConfirmInstall"
+            class="pwa-confirm">
+      Instalar ClimaUY gratis
+    </button>
+
+    <button id="pwaDismiss"
+            class="pwa-dismiss">
+      Ahora no
+    </button>
+
+  </div>
+
+</div>
+
+<!-- Aviso sin conexión -->
+<div id="pwaOffline"
+     class="pwa-offline-banner"
+     role="status"
+     hidden>
+
+  ⚠️ Sin conexión. Los datos disponibles
+  pueden estar desactualizados.
+
+</div>
+
+<!-- Nueva actualización -->
+<div id="pwaUpdate"
+     class="pwa-update-banner"
+     role="status"
+     hidden>
+
+  <h3>🚀 Nueva versión disponible</h3>
+
+  <p>
+    Actualizá ClimaUY para disfrutar
+    de las últimas mejoras.
+  </p>
+
+  <button id="pwaUpdateBtn"
+          class="pwa-install-btn">
+    Actualizar ahora
+  </button>
+
+</div>
 </body>
 </html>

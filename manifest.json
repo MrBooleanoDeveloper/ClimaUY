@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "ClimaUY - Tiempo en Uruguay",
+  "short_name": "ClimaUY",
+  "description": "Pronóstico meteorológico para Uruguay",
+  "lang": "es-UY",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f3f6fb",
+  "theme_color": "#f59e0b",
+  "categories": ["weather", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

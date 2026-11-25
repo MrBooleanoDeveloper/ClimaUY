@@ -15,6 +15,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClimaUY | Tiempo en Uruguay</title>
   <style>
+    .install-btn {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 22px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25);
+  transition: transform 0.2s;
+}
+
+.install-btn:hover {
+  transform: translateY(-2px);
+}
+
+.install-btn[hidden] {
+  display: none !important;
+}
     :root {
       --bg: #f3f6fb;
       --surface: #ffffff;

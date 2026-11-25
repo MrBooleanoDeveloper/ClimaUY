@@ -1174,36 +1174,5 @@
     });
   }
 </script>
-  <script>
-  let deferredPrompt = null;
-  const installBtn = document.getElementById("installBtn");
-
-  window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
-    installBtn.hidden = false;
-  });
-
-  installBtn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-
-    await deferredPrompt.prompt();
-
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
-      console.log("Instalación aceptada");
-    }
-
-    deferredPrompt = null;
-    installBtn.hidden = true;
-  });
-
-  window.addEventListener("appinstalled", () => {
-    installBtn.hidden = true;
-    deferredPrompt = null;
-    console.log("ClimaUY instalado correctamente");
-  });
-</script>
 </body>
 </html>
